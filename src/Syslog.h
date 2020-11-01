@@ -89,6 +89,8 @@ class Syslog {
     uint16_t _port;
     const char* _deviceHostname;
     const char* _appName;
+    const char* _msgID;
+    const char* _procID;
     uint16_t _priDefault;
     uint8_t _priMask = 0xff;
 
@@ -104,6 +106,8 @@ class Syslog {
     Syslog &server(IPAddress ip, uint16_t port);
     Syslog &deviceHostname(const char* deviceHostname);
     Syslog &appName(const char* appName);
+    Syslog &procID(const char* procID);
+    Syslog &msgID(const char* msgID);
     Syslog &defaultPriority(uint16_t pri = LOG_KERN);
 
     Syslog &logMask(uint8_t priMask);

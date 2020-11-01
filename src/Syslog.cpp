@@ -14,6 +14,8 @@ Syslog::Syslog(UDP &client, uint8_t protocol) {
   this->_deviceHostname = SYSLOG_NILVALUE;
   this->_appName = SYSLOG_NILVALUE;
   this->_priDefault = LOG_KERN;
+  this->_msgID = SYSLOG_NILVALUE;
+  this->_procID = SYSLOG_NILVALUE;
 }
 
 Syslog::Syslog(UDP &client, const char* server, uint16_t port, const char* deviceHostname, const char* appName, uint16_t priDefault, uint8_t protocol) {
@@ -24,6 +26,8 @@ Syslog::Syslog(UDP &client, const char* server, uint16_t port, const char* devic
   this->_deviceHostname = (deviceHostname == NULL) ? SYSLOG_NILVALUE : deviceHostname;
   this->_appName = (appName == NULL) ? SYSLOG_NILVALUE : appName;
   this->_priDefault = priDefault;
+  this->_msgID = SYSLOG_NILVALUE;
+  this->_procID = SYSLOG_NILVALUE;
 }
 
 Syslog::Syslog(UDP &client, IPAddress ip, uint16_t port, const char* deviceHostname, const char* appName, uint16_t priDefault, uint8_t protocol) {
@@ -35,6 +39,8 @@ Syslog::Syslog(UDP &client, IPAddress ip, uint16_t port, const char* deviceHostn
   this->_deviceHostname = (deviceHostname == NULL) ? SYSLOG_NILVALUE : deviceHostname;
   this->_appName = (appName == NULL) ? SYSLOG_NILVALUE : appName;
   this->_priDefault = priDefault;
+  this->_msgID = SYSLOG_NILVALUE;
+  this->_procID = SYSLOG_NILVALUE;
 }
 
 Syslog &Syslog::server(const char* server, uint16_t port) {
@@ -57,6 +63,16 @@ Syslog &Syslog::deviceHostname(const char* deviceHostname) {
 
 Syslog &Syslog::appName(const char* appName) {
   this->_appName = (appName == NULL) ? SYSLOG_NILVALUE : appName;
+  return *this;
+}
+
+Syslog &Syslog::msgID(const char* msgID) {
+  this->_msgID = (msgID == NULL) ? SYSLOG_NILVALUE : msgID;
+  return *this;
+}
+
+Syslog &Syslog::procID(const char* procID) {
+  this->_procID = (procID == NULL) ? SYSLOG_NILVALUE : procID;
   return *this;
 }
 
@@ -223,7 +239,11 @@ inline bool Syslog::_sendLog(uint16_t pri, const char *message) {
   this->_client->print(' ');
   this->_client->print(this->_appName);
   if (this->_protocol == SYSLOG_PROTO_IETF) {
-    this->_client->print(F(" - - - \xEF\xBB\xBF"));
+    this->_client->print(' ');
+    this->_client->print(this->_procID);
+    this->_client->print(' ');
+    this->_client->print(this->_msgID);
+    this->_client->print(F(" - \xEF\xBB\xBF"));
   } else {
     this->_client->print(F("[0]: "));
   }
